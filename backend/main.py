@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -98,10 +99,13 @@ def get_history():
 BASE_DIR = Path(__file__).resolve().parent
 DIST_DIR = BASE_DIR / "dist"
 
-from fastapi.staticfiles import StaticFiles
+# Віддаємо index.html на /
+@app.get("/")
+def read_index():
+    return FileResponse(DIST_DIR / "index.html")
 
-app.mount(
-    "/",
-    StaticFiles(directory=DIST_DIR, html=True),
-    name="dist"
-)
+# Віддаємо всі JS і CSS з assets
+app.mount("/assets", StaticFiles(directory=DIST_DIR / "assets"), name="assets")
+
+# Віддаємо всі файли з public (твоє відео)
+app.mount("/public", StaticFiles(directory=DIST_DIR / "public"), name="public")
