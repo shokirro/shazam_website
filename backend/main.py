@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
@@ -99,12 +98,10 @@ def get_history():
 BASE_DIR = Path(__file__).resolve().parent
 DIST_DIR = BASE_DIR / "dist"
 
-app.mount(
-    "/assets",
-    StaticFiles(directory=DIST_DIR / "assets"),
-    name="assets"
-)
+from fastapi.staticfiles import StaticFiles
 
-@app.get("/")
-def serve_spa():
-    return FileResponse(DIST_DIR / "index.html")
+app.mount(
+    "/",
+    StaticFiles(directory=DIST_DIR, html=True),
+    name="dist"
+)
